@@ -33,3 +33,5 @@ playground for spring-boot, kotlin, jooq
 - nullable db columns will be treated the same way as non-nullable columns by the code-gen
 
 --> We need either jsr305 annotations provided by the code-gen or kotlin data classes (with nullable types)
+
+see: https://blog.jooq.org/tag/null/
