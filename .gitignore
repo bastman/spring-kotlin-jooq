@@ -8,4 +8,7 @@
 .gradle/
 **/build/**
 **/out/**
+
+
 ### custom
+rest-api/version.txt
