@@ -1,7 +1,7 @@
 package com.example
 
+import com.example.api.tweeter.domain.TweeterRepo
 import com.example.db.gen.tables.records.TweetRecord
-import com.example.domain.TweeterRepo
 import com.example.util.sql.toSqlTimestamp
 import mu.KLogging
 import org.springframework.boot.CommandLineRunner
