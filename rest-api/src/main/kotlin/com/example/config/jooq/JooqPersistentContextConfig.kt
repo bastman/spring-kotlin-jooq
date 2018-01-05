@@ -25,15 +25,11 @@ class JooqPersistentContextConfig(
 ) {
 
     @Bean
-    fun connectionProvider(): DataSourceConnectionProvider {
-
-        return DataSourceConnectionProvider(TransactionAwareDataSourceProxy(dataSource))
-    }
+    fun connectionProvider()= DataSourceConnectionProvider(TransactionAwareDataSourceProxy(dataSource))
 
     @Bean
-    fun dsl(): DefaultDSLContext {
-        return DefaultDSLContext(configuration())
-    }
+    fun dsl() = DefaultDSLContext(configuration())
+
 
     fun configuration(): DefaultConfiguration {
         val jooqConfiguration = DefaultConfiguration()
@@ -41,12 +37,14 @@ class JooqPersistentContextConfig(
         val settings=jooqConfiguration.settings()
         // https://www.jooq.org/doc/3.7/manual/sql-execution/crud-with-updatablerecords/optimistic-locking/
         settings.withExecuteWithOptimisticLocking(true)
+                .withExecuteLogging(true)
 
         jooqConfiguration.set(settings)
         jooqConfiguration.set(connectionProvider())
         jooqConfiguration.set(DefaultExecuteListenerProvider(jooqToSpringExceptionTransformer()))
+
         if (dialect.isEmpty()) {
-            throw ApplicationContextException("App Config Error! spring.jooq.sql-dialect MUST NOT BE EMPTY!")
+            throw RuntimeException("App Config Error! spring.jooq.sql-dialect MUST NOT BE EMPTY!")
         }
         val sqlDialect: SQLDialect = when (dialect.trim().toUpperCase()) {
             "POSTGRES" -> SQLDialect.POSTGRES_9_5
