@@ -1,0 +1,11 @@
+---
+spring:
+  profiles:
+    active: local
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  jooq:
+    sql-dialect: Postgres
+app:
+  appName: "spring-kotlin-jooq"
+---
