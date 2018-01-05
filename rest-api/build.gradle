@@ -5,12 +5,15 @@ version '0.0.1'
 buildscript {
     ext {
         kotlin_version = '1.1.61'
+        kotlinLoggingVersion = '1.4.6'
         springBootVersion ='1.5.7.RELEASE'
         jacksonVersion = '2.9.2'
         swaggerVersion = '2.7.0'
         mockitoVersion = '2.8.47'
         postgresDriverVersion = '42.1.4'
         jooqVersion = '3.9.5' // '3.10.1' not supported yet by plugin: nu.studer.jooq
+        jooqCodeGenVersion = '2.0.9'
+        avastDockerComposeVersion = '0.6.9'
     }
 
     dependencies {
@@ -20,6 +23,8 @@ buildscript {
         classpath("org.jetbrains.kotlin:kotlin-noarg:${kotlin_version}")
 
         classpath "org.postgresql:postgresql:${postgresDriverVersion}"
+        classpath "nu.studer:gradle-jooq-plugin:${jooqCodeGenVersion}"
+        classpath "com.avast.gradle:gradle-docker-compose-plugin:$avastDockerComposeVersion"
     }
 }
 
@@ -29,6 +34,8 @@ apply plugin: "kotlin"
 apply plugin: "kotlin-spring"
 apply plugin: "kotlin-noarg"
 apply plugin: "org.springframework.boot"
+apply plugin: 'nu.studer.jooq'
+apply plugin: 'docker-compose'
 
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
@@ -41,7 +48,12 @@ dependencies {
     // kotlin
     compile("org.jetbrains.kotlin:kotlin-stdlib-jre8")
     compile("org.jetbrains.kotlin:kotlin-reflect")
+    // logging
+    compile "io.github.microutils:kotlin-logging:$kotlinLoggingVersion"
     // spring
+    compile 'org.springframework.boot:spring-boot-starter-jooq', {
+        exclude group: "org.jooq", module: "jooq"
+    }
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-actuator")
     // jackson
@@ -50,5 +62,83 @@ dependencies {
     // swagger
     compile "io.springfox:springfox-swagger2:$swaggerVersion"
     compile "io.springfox:springfox-swagger-ui:$swaggerVersion"
+
+    // jooq & postgres
+    // https://mvnrepository.com/artifact/org.jooq/jooq
+    compile "org.postgresql:postgresql:${postgresDriverVersion}"
+    compile "org.jooq:jooq:$jooqVersion"
+    jooqRuntime "org.postgresql:postgresql:${postgresDriverVersion}"
+
+}
+
+
+
+jooq {
+    // see: https://www.jooq.org/xsd/jooq-codegen-3.9.2.xsd
+    version = "${jooqVersion}"
+    app(sourceSets.main) {
+        jdbc {
+            driver = 'org.postgresql.Driver'
+            url = 'jdbc:postgresql://localhost:5435/app'
+            user = 'app_rw'
+            password = 'app_rw'
+            schema = 'public'
+        }
+        generator {
+            name = 'org.jooq.util.DefaultGenerator'
+            strategy {
+                name = 'org.jooq.util.DefaultGeneratorStrategy'
+            }
+            database {
+                name = 'org.jooq.util.postgres.PostgresDatabase'
+                inputSchema = 'public'
+            }
+            generate {
+                relations = true
+                deprecated = false
+                records = true
+                daos = false
+                immutablePojos = true
+                fluentSetters = true
+                javaTimeTypes = false // java8 time api
+
+                // requires jpa
+                jpaAnnotations = false
+                validationAnnotations = false
+                springAnnotations = false
+            }
+            target {
+                packageName = 'com.example.db.gen'
+                directory = 'src/main/generated/java'
+            }
+        }
+    }
+}
+
+//compileJava.dependsOn generateJooqSchemaSource
+dockerCompose.isRequiredBy(generateAppJooqSchemaSource) // hooks 'dependsOn composeUp' and 'finalizedBy composeDown', and exposes environment variables and system properties (if possible)
+
+dockerCompose.isRequiredBy(build) // hooks 'dependsOn composeUp' and 'finalizedBy composeDown', and exposes environment variables and system properties (if possible)
+//dockerCompose.isRequiredBy(anyTask) // hooks 'dependsOn composeUp' and 'finalizedBy composeDown', and exposes environment variables and system properties (if possible)
+
+dockerCompose {
+    useComposeFiles = ['docker/docker-compose.yml'] // like 'docker-compose -f <file>'
+    startedServices = ['spring-kotlin-jooq-db-ci'] // list of services to execute when calling 'docker-compose up' (when not specified, all services are executed)
+    // captureContainersOutput = true // prints output of all containers to Gradle output - very useful for debugging
+    // captureContainersOutputToFile = '/path/to/logFile' // sends output of all containers to a log file
+    // stopContainers = false // doesn't call `docker-compose down` - useful for debugging
+    // removeContainers = false
+    // removeImages = "None" // Other accepted values are: "All" and "Local"
+    // removeOrphans = false // Removes containers for services not defined in the Compose file
+    // forceRecreate = true // pass '--force-recreate' when calling 'docker-compose up'
+    // removeVolumes = false
+    // waitForTcpPorts = false // turns off the waiting for exposed TCP ports opening
+    // projectName = 'my-project' // allow to set custom docker-compose project name (defaults to directory name)
+    // executable = '/path/to/docker-compose' // allow to set the path of the docker-compose executable (useful if not present in PATH)
+    // dockerExecutable = '/path/to/docker' // allow to set the path of the docker executable (useful if not present in PATH)
+    // dockerComposeWorkingDirectory = '/path/where/docker-compose/is/invoked/from'
+    // dockerComposeStopTimeout = java.time.Duration.ofSeconds(20) // time before docker-compose sends SIGTERM to the running containers after the composeDown task has been started
+    // environment.put 'BACKEND_ADDRESS', '192.168.1.100' // Pass environment variable to 'docker-compose' for substitution in compose file
+    // scale = [${serviceName1}: 5, ${serviceName2}: 2] // Pass docker compose --scale option like 'docker-compose up --scale serviceName1=5 --scale serviceName2=2'
 }
 

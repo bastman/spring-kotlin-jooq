@@ -11,4 +11,6 @@
 
 
 ### custom
-rest-api/version.txt
+**/version.txt
+**/src/main/generated/**
+

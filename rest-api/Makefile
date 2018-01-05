@@ -51,7 +51,7 @@ app.build: app.clean app.version guard-SERVICE_VERSION db.build
 
 	@echo "building service $(SERVICE_NAME) version $(SERVICE_VERSION)"
 	mkdir -p src/main/resources/public/ && cp -rf version.txt src/main/resources/public/version.txt
-	$(GRADLE_CMD) clean generateFooJooqSchemaSource build test
+	$(GRADLE_CMD) clean generateAppJooqSchemaSource build test
 	docker build -t $(DOCKER_TAG_LOCAL_APP) -f $(DOCKER_FILE_APP) .
 	export SERVICE_VERSION=$(SERVICE_VERSION) && docker-compose -f $(DOCKER_COMPOSE_FILE) down -v
 	@echo "build complete: service $(SERVICE_NAME) version $(SERVICE_VERSION)"
