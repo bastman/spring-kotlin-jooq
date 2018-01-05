@@ -62,6 +62,6 @@ class JooqPersistentContextConfig(
     }
 
     @Bean
-    fun jooqToSpringExceptionTransformer()= JOOQToSpringExceptionTransformer()
+    fun jooqToSpringExceptionTransformer() = JOOQToSpringExceptionTransformer()
 
 }

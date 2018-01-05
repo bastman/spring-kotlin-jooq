@@ -11,4 +11,4 @@ class FooApiController {
     fun foo() = FooResponse(foo = "FOOOO", now = Instant.now())
 }
 
-data class FooResponse(val foo:String, val now:Instant)
+data class FooResponse(val foo: String, val now: Instant)

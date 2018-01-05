@@ -6,6 +6,7 @@ buildscript {
     ext {
         kotlin_version = '1.1.61'
         kotlinLoggingVersion = '1.4.6'
+        logstashLogbackEncoderVersion='4.8'
         springBootVersion ='1.5.7.RELEASE'
         jacksonVersion = '2.9.2'
         swaggerVersion = '2.7.0'
@@ -49,6 +50,7 @@ dependencies {
     compile("org.jetbrains.kotlin:kotlin-stdlib-jre8")
     compile("org.jetbrains.kotlin:kotlin-reflect")
     // logging
+    compile "net.logstash.logback:logstash-logback-encoder:$logstashLogbackEncoderVersion"
     compile "io.github.microutils:kotlin-logging:$kotlinLoggingVersion"
     // spring
     compile 'org.springframework.boot:spring-boot-starter-jooq', {
@@ -71,7 +73,12 @@ dependencies {
 
 }
 
-
+test {
+    testLogging {
+        events "failed"
+        exceptionFormat "full"
+    }
+}
 
 jooq {
     // see: https://www.jooq.org/xsd/jooq-codegen-3.9.2.xsd
