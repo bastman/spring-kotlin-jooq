@@ -38,6 +38,11 @@ class JooqPersistentContextConfig(
     fun configuration(): DefaultConfiguration {
         val jooqConfiguration = DefaultConfiguration()
 
+        val settings=jooqConfiguration.settings()
+        // https://www.jooq.org/doc/3.7/manual/sql-execution/crud-with-updatablerecords/optimistic-locking/
+        settings.withExecuteWithOptimisticLocking(true)
+
+        jooqConfiguration.set(settings)
         jooqConfiguration.set(connectionProvider())
         jooqConfiguration.set(DefaultExecuteListenerProvider(jooqToSpringExceptionTransformer()))
         if (dialect.isEmpty()) {
