@@ -35,3 +35,7 @@ playground for spring-boot, kotlin, jooq
 --> We need either jsr305 annotations provided by the code-gen or kotlin data classes (with nullable types)
 
 see: https://blog.jooq.org/tag/null/
+
+## things to read ...
+- https://github.com/making/spring-boot-db-samples
+- https://leanpub.com/opinionatedjpa/read
