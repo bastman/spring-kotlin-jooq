@@ -36,7 +36,12 @@ db.local.up: db.build
 ## db.ci.up   : build and start db-ci
 db.ci.up: db.build
 	docker-compose -f $(DOCKER_COMPOSE_FILE) up $(DOCKER_COMPOSE_SVC_DB_CI)
-
+## db.down   : stop db's
+db.down:
+	docker-compose -f $(DOCKER_COMPOSE_FILE) down
+## db.down   : stop db's and delete volumes
+db.down.v:
+	docker-compose -f $(DOCKER_COMPOSE_FILE) down -v
 ## app.clean   : clean
 app.clean:
 	$(GRADLE_CMD) clean

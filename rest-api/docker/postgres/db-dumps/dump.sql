@@ -43,13 +43,37 @@ CREATE TABLE tweet (
     message text NOT NULL,
     comment text NULL
 );
-
-
 ALTER TABLE tweet OWNER TO app_rw;
-
 ALTER TABLE ONLY tweet
     ADD CONSTRAINT tweet_pkey PRIMARY KEY (id);
 
+
+CREATE TABLE author (
+    id uuid NOT NULL,
+    version integer NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    name text NOT NULL
+);
+ALTER TABLE author OWNER TO app_rw;
+ALTER TABLE ONLY author
+    ADD CONSTRAINT author_pkey PRIMARY KEY (id);
+
+CREATE TABLE book (
+    id uuid NOT NULL,
+    author_id uuid NOT NULL,
+    version integer NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    title character varying(255) NOT NULL,
+    status character varying(255) NOT NULL,
+    price numeric(15,2) NOT NULL
+);
+ALTER TABLE book OWNER TO app_rw;
+ALTER TABLE ONLY book
+    ADD CONSTRAINT book_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY book
+    ADD CONSTRAINT book_author_id_fkey FOREIGN KEY (author_id) REFERENCES author(id);
 --
 -- PostgreSQL database dump complete
 --
