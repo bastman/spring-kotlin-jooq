@@ -26,13 +26,19 @@ playground for spring-boot, kotlin, jooq
 
 ## findings
 
+- jooq is great, but no silver bullet
 - the jooq codegen generates java
 - the generated java is not null-safe
 - nullable db columns will be treated the same way as non-nullable columns by the code-gen
+- generated record-classes are mutable (ActiveRecord)
+- Its hard to write idiomatic kotlin at the moment. Hope future versions of jooq may support idiomatic kotlin nicer.
+- And intellij ... Working in Intellij gets really slow (might be related to all this method overloading and varargs being used by jooq generated classes)
 
 --> We need either jsr305 annotations provided by the code-gen or kotlin data classes (with nullable types)
 
-see: https://blog.jooq.org/tag/null/
+see: 
+- https://blog.jooq.org/tag/null/
+- https://github.com/jOOQ/jOOQ/issues/6345
 
 
 ## This example project is based on ...
