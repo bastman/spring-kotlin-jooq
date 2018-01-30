@@ -1,5 +1,6 @@
 package com.example.api.tweeter.domain
 
+import com.example.api.common.EntityNotFoundException
 import com.example.db.gen.tables.Tweet
 import com.example.db.gen.tables.records.TweetRecord
 import org.jooq.DSLContext
