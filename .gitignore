@@ -14,3 +14,6 @@
 **/version.txt
 **/src/main/generated/**
 
+## jooq codegen
+rest-api/src/main/generated
+
