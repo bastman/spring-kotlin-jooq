@@ -43,37 +43,36 @@ class BookStoreApiController(
             .also { logger.info { "Updated Record: $it" } }
             .toAuthorDto()
 
-
     @GetMapping("/api/bookstore/books/{id}")
     fun booksGetOne(@PathVariable id: UUID) =
-            bookRepo.requireOneById(id)
+            bookRepo.requireOneById(id).toBookDto()
 
-    @PutMapping("/api/bookstore/books")
-    fun booksCreateOne(@RequestBody req: BookCreateRequest) =
-            req.toBookRecord()
-                    .let { bookRepo.insert(it) }
-                    .also { logger.info { "Updated Record: $it" } }
+        @PutMapping("/api/bookstore/books")
+        fun booksCreateOne(@RequestBody req: BookCreateRequest) =
+                req.toBookRecord()
+                        .let { bookRepo.insert(it) }
+                        .also { logger.info { "Updated Record: $it" } }
+                        .toBookDto()
 
+        @PostMapping("/api/bookstore/books/{id}")
+        fun booksUpdateOne(@PathVariable id: UUID, @RequestBody req: BookUpdateRequest) = bookRepo.requireOneById(id)
+                .apply {
+                    updatedAt = Instant.now().toSqlTimestamp()
+                    title = req.title
+                    status = req.status.name
+                    price = req.price
+                }
+                .let { bookRepo.update(it) }
+                .also { logger.info { "Updated Record: $it" } }
+                .toBookDto()
 
-    @PostMapping("/api/bookstore/books/{id}")
-    fun booksUpdateOne(@PathVariable id: UUID, @RequestBody req: BookUpdateRequest) = bookRepo.requireOneById(id)
-            .apply {
-                updatedAt = Instant.now().toSqlTimestamp()
-                title = req.title
-                status = req.status.name
-                price = req.price
-            }
-            .let { bookRepo.update(it) }
-            .also { logger.info { "Updated Record: $it" } }
+        @GetMapping("/api/bookstore/books")
+        fun booksFindAll() = bookRepo.findAllBooksJoinAuthor()
+                .map { it.toBookDto() }
+                .also { logger.info { it } }
 
-
-    @GetMapping("/api/bookstore/books")
-    fun booksFindAll() = bookRepo.findAllBooksJoinAuthor()
-            .map { it.toBookDto() }
-            .also { logger.info { it } }
-
-    @GetMapping("/api/bookstore/books/summary")
-    fun booksFindAllAsSummary() = bookRepo.findAllBooksJoinAuthorAsSummary()
+        @GetMapping("/api/bookstore/books/summary")
+        fun booksFindAllAsSummary() = bookRepo.findAllBooksJoinAuthorAsSummary()
 
     companion object : KLogging()
 }

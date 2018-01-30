@@ -27,6 +27,14 @@ data class BookDto(
         val modifiedAt: Instant,
         val title: String,
         val status: BookStatus,
+        val price: BigDecimal
+)
+data class BookWithAuthorDto(
+        val id: UUID,
+        val createdAt: Instant,
+        val modifiedAt: Instant,
+        val title: String,
+        val status: BookStatus,
         val price: BigDecimal,
         val author: AuthorDto
 )
@@ -61,9 +69,17 @@ fun BookCreateRequest.toBookRecord(): BookRecord {
             price
     )
 }
-
-fun BookRecordJoinAuthorRecord.toBookDto() =
+fun BookRecord.toBookDto() =
         BookDto(
+                id = id,
+                createdAt = createdAt.toInstant(),
+                modifiedAt = updatedAt.toInstant(),
+                title = title,
+                status = BookStatus.valueOf(status),
+                price = price
+        )
+fun BookRecordJoinAuthorRecord.toBookDto() =
+        BookWithAuthorDto(
                 id = bookRecord.id,
                 createdAt = bookRecord.createdAt.toInstant(),
                 modifiedAt = bookRecord.updatedAt.toInstant(),

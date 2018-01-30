@@ -4,12 +4,12 @@ version '0.0.1'
 
 buildscript {
     ext {
-        kotlin_version = '1.1.61'
+        kotlin_version = '1.2.21'
         kotlinLoggingVersion = '1.4.6'
         logstashLogbackEncoderVersion='4.8'
-        springBootVersion ='1.5.7.RELEASE'
+        springBootVersion ='1.5.9.RELEASE'
         jacksonVersion = '2.9.2'
-        swaggerVersion = '2.7.0'
+        swaggerVersion = '2.8.0'
         mockitoVersion = '2.8.47'
         postgresDriverVersion = '42.1.4'
         jooqVersion = '3.9.5' // '3.10.1' not supported yet by plugin: nu.studer.jooq
