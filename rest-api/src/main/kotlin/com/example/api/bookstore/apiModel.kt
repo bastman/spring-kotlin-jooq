@@ -6,6 +6,7 @@ import com.example.api.bookstore.domain.db.Book
 import com.example.api.bookstore.domain.db.BookStatus
 import com.example.api.bookstore.domain.repo.BookRecordJoinAuthorRecord
 */
+import com.example.api.bookstore.domain.repo.BookRecordJoinAuthorRecord
 import com.example.db.gen.tables.records.AuthorRecord
 import com.example.db.gen.tables.records.BookRecord
 import com.example.util.sql.toSqlTimestamp
@@ -60,16 +61,14 @@ fun BookCreateRequest.toBookRecord(): BookRecord {
             price
     )
 }
-/*
+
 fun BookRecordJoinAuthorRecord.toBookDto() =
         BookDto(
                 id = bookRecord.id,
-                createdAt = bookRecord.createdAt,
-                modifiedAt = bookRecord.modifiedAt,
+                createdAt = bookRecord.createdAt.toInstant(),
+                modifiedAt = bookRecord.updatedAt.toInstant(),
                 title = bookRecord.title,
-                status = bookRecord.status,
+                status = BookStatus.valueOf(bookRecord.status),
                 price = bookRecord.price,
                 author = authorRecord.toAuthorDto()
         )
-
-*/

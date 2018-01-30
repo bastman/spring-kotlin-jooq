@@ -66,19 +66,14 @@ class BookStoreApiController(
             .let { bookRepo.update(it) }
             .also { logger.info { "Updated Record: $it" } }
 
-/*
-    @GetMapping("/api/bookstore/books")
-    fun booksFindAll() = bookRepo.findAllBooksJoinAuthor().map {
-        it.toBookDto()
-    }.also {
 
-        logger.info { it }
-    }
+    @GetMapping("/api/bookstore/books")
+    fun booksFindAll() = bookRepo.findAllBooksJoinAuthor()
+            .map { it.toBookDto() }
+            .also { logger.info { it } }
 
     @GetMapping("/api/bookstore/books/summary")
     fun booksFindAllAsSummary() = bookRepo.findAllBooksJoinAuthorAsSummary()
-
-    */
 
     companion object : KLogging()
 }
